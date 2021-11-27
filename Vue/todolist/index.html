@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todolist</title>
+    <script src="../vue.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+
+        }
+        ul,li{
+            list-style: none;
+        }
+        #box{
+            padding-bottom: 30px;
+            padding-left: 30px;
+            width: 500px;
+            margin: 100px auto;
+            background-color: #ccc;
+        }
+        p{
+            margin:30px 0;
+        }
+        ul{
+            margin: 20px 0;
+        }
+        .over{
+            color: gray;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <h1>任务列表</h1>
+        <p>
+            任务总数:{{lis.length}} 
+            还有 {{unfinish}}未完成；
+            <button @click="over">完成</button>
+        </p>
+        <ul id="list">
+            <li v-for="(item,index) in lis" :key='item.id'>
+                <input type="checkbox" v-model='item.isfun'>
+                <span :class="[item.isfun? 'over' : '']" v-if="!item.edit" @click="change_(index)">{{item.tit}}</span>
+                <input type="text" v-model="item.tit" @blur="item.edit= false" v-myfocus v-else >
+                <button @click='del(index)'>删除</button>
+            </li>
+        </ul> 
+        <div>
+            <input type="text" v-model='newtodo' @keyup.enter='add'>
+            <button @click='add'>添加</button>
+        </div>
+    </div>
+    <script>
+        /*
+            根据我们的需求，修改代办事项的输入框点击span的时候为显示，
+            失去焦点的时候为让input消失，但是再点击span后input没有处于选中状态，
+            导致消失无用，
+
+            解决方法 ，就是直接操作dom元素，通过 表单的focus方法来获取焦点，
+            vue中，能操作dom的方式，有两种：
+            1.ref属性
+            2.自定义指令
+                2.1.全局自定义指令
+                    Vue.directive(自定义指令的名称/a,{
+                        指令配置项，
+                        vue提供给了一些钩子函数【在指定运行过程中，在指定的阶段、时期，会自动触发（执行）的函数】
+                        其中一个钩子函数，叫inserted，
+                        这个钩子函数是在元素插入页面时触发的
+                        inserted(el){
+                            参数el,就是指令作用的那个dom元素
+                        }
+                        bind{}，//当指令绑定到元素时时触发
+                        unbind(){}  //当指令解绑时触发
+                    })
+                使用时：v-自定义指令的名称 v-a
+                2.2.本地自定义指令
+                   new Vue({
+                       el,
+                       data,
+                       diretives:{
+                           自定义指令的名称：{
+                               钩子函数(el){}
+                           }
+                       }
+                   })
+
+        全局和本地功能都是一样的，只是作用的范围不同
+        */
+       Vue.directive('myfocus',{
+        //    el是dom对象
+           inserted(el){
+               el.focus()
+           }
+       })
+        Vue.config.productionTip = false
+        new Vue({
+            el:'#box',
+            data:{
+                lis:[
+                    {id:0,tit:'学习Vue',isfun:false,edit:false},
+                    {id:1,tit:'学习React',isfun:false,edit:false},
+                    {id:2,tit:'学习Js',isfun:true,edit:false},
+                ],
+                newtodo:'',// 获取新的代办事项
+            },
+            methods:{
+                change_(index){
+                    // 该是否可编辑的状态
+                    this.lis[index].edit = true
+                    // 判断完成状态
+                    if(this.lis[index].isfun  == true){
+                        this.lis[index].edit = false
+                    }else{
+                        this.lis[index].edit = true
+                    }
+                },
+                over(){
+                    this.lis = this.lis.filter((item)=>item.isfun == false)
+                },
+                add(){
+                    if(this.newtodo == '')return
+                    this.id++
+                    this.lis.push({
+                        id:this.id,
+                        tit:this.newtodo,
+                        isfun:false,
+                        edit:false
+                    })
+                    this.newtodo = ''
+                },
+                del(index){
+                    this.lis.splice(index,1)
+                }
+            },
+            computed:{
+                unfinish(){
+                    // filter 筛选方法
+                    return this.lis.filter((item)=>{
+                        return item.isfun == false  
+                    }).length
+                }
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册页面</title>
+    <script src="../vue.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul,li{
+            list-style: none;
+        }
+        #box{
+            width: 800px;
+            margin: 10px auto;
+        }
+        .form_{
+            position: relative;
+            border: 1px solid #000;
+        }
+        .form_>div{
+            margin: 20px 0 10px 10px;
+        }
+        .form_>div>label{
+            width: 100px;
+        }
+        .form_ input{
+            outline: none;
+            height: 30px;
+        }
+        .form-tit{
+            position:absolute;
+            top: -12px;
+            left: 10px;
+            background-color: white;
+        }
+        .form_btn{
+            width: 100px;
+            height: 30px;
+            color: white;
+            background-color: rgb(64,172,198);
+            border: none;
+        }
+        #lis{
+            width: 800px;
+            border: 2px solid rgb(64,172,198);
+        }
+        #lis>li{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            color: white;
+            line-height: 30px;
+            height: 30px;
+        }
+        .lis_li_1{
+            background-color:rgb(64,172,198)
+        }
+        ul>li{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            line-height: 50px;
+            height: 50px;
+        }
+        ul>li:nth-child(odd){
+            background-color: #ccc;
+        }
+        .lis_li_btn{
+            color: white;
+            cursor: pointer;
+            padding: 0 10px;
+            margin-top: 10px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: rgb(64,172,198);
+        }
+        .yc{
+            position: absolute;
+            top: 0;
+            right: 50%;
+            color: red;
+            transform: translate(50%);
+        }
+    </style>
+</head>
+    <div id="box">
+        <div class="form_">
+            <span class="form-tit" >学生信息录入系统</span>
+            <div>
+                <label for="name1"> 姓名：</label>
+                <input type="text" id="name1" placeholder="请输入用户名" v-model="newlist.name">
+            </div>
+            <div class="yc" v-show="pand">请输入数字、字母、下划线</div>
+            <div>
+                <label for="name2"> 年龄：</label>
+                <input type="password" id="name2" placeholder="请输入年龄" v-model="newlist.age">
+            </div>
+            <div>
+                <label for="sex"> 性别：</label>
+                <select name="sex" id="" v-model="newlist.sex">
+                    <option value="" seletted disabled>请选择</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div>
+                <label for="">手机：</label>
+                <input type="text" placeholder="请输入手机号码" v-model="newlist.pone">
+            </div>
+            <div>
+                <button class="form_btn" @click='new_n'>创建新用户</button>
+            </div>
+        </div>
+        <div id="lis">
+            <li class="lis_li_1"><span>姓名</span><span>性别</span><span>年龄</span><span>手机</span><span>删除</span></li>
+            <ul class="ul_">
+            <li v-for="(item,index) in list"><span>{{item.name}}</span><span>{{item.sex}}</span><span>{{item.age}}</span><span>{{item.pone}}</span><span class="lis_li_btn" @click="del(index)">删除</span></li>
+            </ul>
+        </div>
+        
+    </div>
+<body>
+    <script>
+        Vue.config.productionTip = false;
+
+        new Vue({
+            el:'#box',
+            data:{
+                newname:'',
+                newage:'',
+                newsex:'',
+                newpone:'',
+                list:[
+                    {name:'张三',sex:'男',age:'20',pone:'15238622658'},
+                    {name:'赵四',sex:'男',age:'19',pone:'15238622658'},
+                    {name:'王五',sex:'男',age:'18',pone:'15238622658'},
+                    {name:'宋六',sex:'男',age:'21',pone:'15238622658'},
+                    {name:'路人甲',sex:'男',age:'18',pone:'15238622658'},
+                ],
+                newlist:{name:'',sex:'',age:'',pone:''},
+                pand:false
+            },
+            methods:{
+                new_n(){
+                    // 获取信息，push到list
+                    // 判断用户名
+                    let name_= /^[0-9A-Za-z_]{4,16}$/
+                    if(name_.test(this.newlist.name) == false){
+                        this.pand = true;
+                        return; 
+                        
+                    }else{
+                        this.pand = false
+                        this.list.unshift(this.newlist)
+                    }
+                },
+                del(v){
+                    this.list.splice(v,1);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
